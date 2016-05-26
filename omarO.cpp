@@ -89,19 +89,19 @@ void Sounds::playSound(char *name)
 
 int Sounds::generateSource()
 {
-    for(int i = 0; i < NUM_SOURCES; i++) {
+    for (int i = 0; i < NUM_SOURCES; i++) {
         //Generate a source, and store it in a buffer.
         alGenSources(1, &source[i]);
         alSourcei(source[i], AL_BUFFER, buffers[i]);
         //Set volume and pitch to normal, no looping of sound.
         alSourcef(source[i], AL_GAIN, 1.0f);
         alSourcef(source[i], AL_PITCH, 1.0f);
-				if (i == 2) {
-        alSourcei(source[i], AL_LOOPING, AL_TRUE);//loop soundtrack
-				}
-				else {
-        	alSourcei(source[i], AL_LOOPING, AL_FALSE);
-				}
+        if (i == 2) {
+            alSourcei(source[i], AL_LOOPING, AL_TRUE);//loop soundtrack
+        }
+        else {
+            alSourcei(source[i], AL_LOOPING, AL_FALSE);
+        }
         if (alGetError() != AL_NO_ERROR) {
             cout << "ERROR: setting source\n";
             return 0;
@@ -119,20 +119,20 @@ void Sounds::listener()
 }
 void Sounds::cleanUpSound()
 {
-    for(int i = 0; i < NUM_SOURCES; i++) {
+    for (int i = 0; i < NUM_SOURCES; i++) {
         alDeleteSources(1, &source[i]);
         alDeleteBuffers(1, &buffers[i]);
     }
-        //Get active context.
-        ALCcontext *Context = alcGetCurrentContext();
-        //Get device for active context.
-        ALCdevice *Device = alcGetContextsDevice(Context);
-        //Disable context.
-        alcMakeContextCurrent(NULL);
-        //Release context(s).
-        alcDestroyContext(Context);
-        //Close device.
-        alcCloseDevice(Device);
+    //Get active context.
+    ALCcontext *Context = alcGetCurrentContext();
+    //Get device for active context.
+    ALCdevice *Device = alcGetContextsDevice(Context);
+    //Disable context.
+    alcMakeContextCurrent(NULL);
+    //Release context(s).
+    alcDestroyContext(Context);
+    //Close device.
+    alcCloseDevice(Device);
 }
 int ballChestCollision(TreasureChest &chest, Ball &b)
 {

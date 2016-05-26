@@ -243,7 +243,7 @@ int main(void)
     char syscall_buffer[256];
     char filename[256];
 
-    for(int i = 0; i < NUM_IMAGES; i++) {
+    for (int i = 0; i < NUM_IMAGES; i++) {
         strcpy(filename, ImageFile[i]);
         char *period = strchr(filename, '.');
         *period = '\0';   
@@ -312,8 +312,8 @@ int main(void)
     clock_gettime(CLOCK_REALTIME, &timePause);
     clock_gettime(CLOCK_REALTIME, &timeStart);
     gameSounds.playSound((char *)"soundtrack\0");
-    while(!done) {
-        while(XPending(dpy)) {
+    while (!done) {
+        while (XPending(dpy)) {
             XEvent e;
             XNextEvent(dpy, &e);
             checkResize(&e);
@@ -327,7 +327,7 @@ int main(void)
         timeSpan = timeDiff(&timeStart, &timeCurrent);
         timeCopy(&timeStart, &timeCurrent);
         physicsCountdown += timeSpan;
-        while(physicsCountdown >= physicsRate) {
+        while (physicsCountdown >= physicsRate) {
             physics();
             physicsCountdown -= physicsRate;
         }
@@ -339,7 +339,7 @@ int main(void)
     cleanupXWindows();
     cleanup_fonts();
     gameSounds.cleanUpSound();
-    for(int i = 0; i < NUM_IMAGES; i++) {
+    for (int i = 0; i < NUM_IMAGES; i++) {
         strcpy(filename, ImageFile[i]);
         char *period = strchr(filename, '.');
         *period = '\0';   
@@ -486,7 +486,8 @@ void initCannons()
 
 }
 
-void initGameBoard(GameBoard &gb) {
+void initGameBoard(GameBoard &gb) 
+{
     gb.center[0] = ((double)xres - CHUTE_THICKNESS - CHUTE_WIDTH) / 2.0 + monsterGutter;
     gb.center[1] = (double)yres / 2.0;
 
@@ -609,7 +610,7 @@ void seaMonsterState(SeaMonster &monster)
     /*std::cout << "time difference: " << timeDiff(&monster.active_time, &timeCurrent) << std::endl;
       std::cout << "monster state: " << monster.state << std::endl;
     //just started
-    */
+     */
     if (monster.state == -1) {
         timeCopy(&monster.active_time, &timeCurrent);
         monster.state = 0;
@@ -648,7 +649,7 @@ void seaMonsterState(SeaMonster &monster)
         case 2:
             //just got hit
             if (timeDiff(&monster.active_time, &timeCurrent) < 0.5) {
-								gameSounds.playSound((char *)"monster\0");
+                gameSounds.playSound((char *)"monster\0");
                 monster.rectangle.pos[0] += (rand() % 10) - 5;
                 monster.rectangle.pos[1] += (rand() % 10) - 5;
 
@@ -801,7 +802,7 @@ void checkKeys(XEvent *e)
     int key = XLookupKeysym(&e->xkey, 0);
 
     if (e->type == KeyPress) {
-        switch(key) {
+        switch (key) {
             case XK_1:
                 if (MainMenuOn == 1) {
                     MainMenuOn = 0;
@@ -823,7 +824,7 @@ void checkKeys(XEvent *e)
                     resetGame();
                 }
                 break;
-                
+
             case XK_Left:
                 ball1.vel[0] -= 1.0;
                 break;
@@ -861,15 +862,15 @@ void checkKeys(XEvent *e)
                     cannon.firing = 1;
                     boom = true;
                     launch = true;
-										gameSounds.playSound((char *)"cannon\0");
-                    if(cannonFired < 1) {
+                    gameSounds.playSound((char *)"cannon\0");
+                    if (cannonFired < 1) {
                         ball1.vel[1] = 20.0;
                         cannonFired++;
                     }
                 }
                 //fire secondary cannon
                 else if (boardCannon.loaded && !boardCannon.firing) {
-								gameSounds.playSound((char *)"cannon\0");
+                    gameSounds.playSound((char *)"cannon\0");
                     fireCannon(boardCannon, ball1);
                 }
                 break;
@@ -992,7 +993,7 @@ void fireCannon(Cannon &can, Ball &ball) {
 void physics(void)
 {
     //gravity
-    if(ball1.inPlay && !pauseGame && ball1.hasGravity){
+    if (ball1.inPlay && !pauseGame && ball1.hasGravity) {
         ball1.vel[1] += -0.2;
     }
     //flipper physics
@@ -1017,7 +1018,7 @@ void physics(void)
             chest.active = 1;
 
         }
-        
+
     }
     //treasure chest collision
     if (rectangleBallCollision(chest.r, ball1)) {
@@ -1034,8 +1035,8 @@ void physics(void)
 
     }   
 
-    if(chest.state == 1 && timeDiff(&chest.collision_time, &timeCurrent) > 5) {
-								gameSounds.playSound((char *)"chest\0");
+    if (chest.state == 1 && timeDiff(&chest.collision_time, &timeCurrent) > 5) {
+        gameSounds.playSound((char *)"chest\0");
         chest.state = 0;
         chest.HP = 3;
     } 
@@ -1354,7 +1355,7 @@ void flagAnimation(Flag &f)
     //int flagFrame
     //timespec flagFrameTimer
     //Rectangle r
-    if(f.flagFrame < FLAG_SPRITES * 2) {
+    if (f.flagFrame < FLAG_SPRITES * 2) {
         //cout << "flag: " << f.flagFrame << endl;
         glPushMatrix();
         glColor3d(1.0, 1.0, 1.0);
@@ -1422,7 +1423,7 @@ void drawBall()
     glBindTexture(GL_TEXTURE_2D, pinballTexture);
     glBegin(GL_POLYGON);
 
-    for(angle = 0.0; angle < 360.0; angle+= 2.0)
+    for (angle = 0.0; angle < 360.0; angle+= 2.0)
     {
         radian = angle * (M_PI/100.0f);
         xcos = (float)cos(radian);
@@ -1450,7 +1451,7 @@ void drawBumper(Bumper &b)
             : bumperDownTexture);
     glBegin(GL_POLYGON);
 
-    for(angle = 0.0; angle < 360.0; angle+= 2.0) {
+    for (angle = 0.0; angle < 360.0; angle+= 2.0) {
         radian = angle * (M_PI/100.0f);
 
         xcos = (float)cos(radian);
@@ -1500,7 +1501,7 @@ void drawCannon(Cannon &c)
     drawRectangleTextureAlpha(c.r, CannonTexture);
 
     //smoke
-    if(c.firing) {
+    if (c.firing) {
         c.smoke.state = 1;
         if (c.smoke.frame < SMOKE_SPRITES) {
             smokeAnimation(c.smoke, timeCurrent);
@@ -1535,7 +1536,7 @@ void drawChest(TreasureChest &c)
 }
 void render(void)
 {
-    if(MainMenuOn) {
+    if (MainMenuOn) {
         showMainMenu();
         return;
     }
@@ -1585,16 +1586,16 @@ void render(void)
 
     //show board edge for debug
     /*
-    glPushMatrix();
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glBegin(GL_QUADS);
-    glVertex2i(monsterGutter, 0);
-    glVertex2i(monsterGutter, yres);
-    glVertex2i(monsterGutter + 10, yres);
-    glVertex2i(monsterGutter + 10, 0);
-    glEnd();
-    glPopMatrix();
-*/
+       glPushMatrix();
+       glColor3f(1.0f, 1.0f, 1.0f);
+       glBegin(GL_QUADS);
+       glVertex2i(monsterGutter, 0);
+       glVertex2i(monsterGutter, yres);
+       glVertex2i(monsterGutter + 10, yres);
+       glVertex2i(monsterGutter + 10, 0);
+       glEnd();
+       glPopMatrix();
+     */
     //draw collision rectangles
     glColor3ub(255, 255, 255);
     for (int i = 0; i < board.num_rectangles; i++) {

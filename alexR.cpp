@@ -41,7 +41,7 @@ void addCurve(Curve &c, GameBoard &g)
     Vec point1, point2, btn, horz, zero;
     MakeVector(1, 0, 0, horz);
     MakeVector(0, 0, 0, zero);
-    
+
     for (int i = 0; i <= c.npoints; i++) {
 
         x0 = (1.0 - t) * (1.0 - t) * c.points[0][0] +
@@ -60,7 +60,7 @@ void addCurve(Curve &c, GameBoard &g)
             VecBtn(point1, point2, btn);
             r->pos[0] = (x0 + x1) / 2.0;
             r->pos[1] = (y0 + y1) / 2.0;
-            
+
             r->collide[0] = c.collide[0];
             r->collide[1] = c.collide[1];
             r->collide[2] = false;
@@ -131,7 +131,7 @@ int bumperBallCollision(Bumper &b, Ball &ba)
     Vec between, dV;
 
     VecBtn(b.c.pos, ba.pos, between);
-    
+
     if (VecMagnitude(between) < b.c.radius + ba.radius) {
         VecNormalize(between, dV);
         VecScale(dV, 12, ba.vel);
@@ -169,22 +169,22 @@ bool insideCircle(double radius, Vec &center, Ball &ball)
 {
     Vec between;
     VecBtn(center, ball.pos, between);
-    
+
     //if inside inner radius
     return (VecMagnitude(between) < ball.radius + radius);
- 
+
 
 }
 
 int steeringWheelBallCollision(SteeringWheel &wheel, Ball &ball)
 {
     if (insideCircle(wheel.inner_radius, wheel.pos, ball)) {
-								gameSounds.playSound((char *)"wheel\0");
+        gameSounds.playSound((char *)"wheel\0");
         wheel.rvel = (VecMagnitude(ball.vel) / MAX_VELOCITY) * 10.0;
-	addScore(&Scorekeeper, 50);
+        addScore(&Scorekeeper, 50);
         return 1;
     }
-        
+
     return 0;
 }
 
@@ -211,7 +211,7 @@ int deflectorBallCollision(Deflector &d, Ball &b)
     if (projectX > -(d.r.width + b.radius) && projectX < d.r.width + b.radius
             && projectY > -(b.radius + d.r.height) 
             && projectY < b.radius + d.r.height) {
-								gameSounds.playSound((char *)"rope\0");
+        gameSounds.playSound((char *)"rope\0");
         //move ball in direction of surface normal
         VecScale(vert, 15.0, vert);
         VecAdd(vert, b.vel, b.vel);
@@ -224,10 +224,10 @@ int deflectorBallCollision(Deflector &d, Ball &b)
 
         return 1;
     }
-    
+
     //if a small time period has passed since the collision
     if (d.state == 1 && 
-        timeDiff(&d.collision_time, &timeCurrent) > 0.2) {
+            timeDiff(&d.collision_time, &timeCurrent) > 0.2) {
         d.state = 0;
     }
 
@@ -267,8 +267,8 @@ int rectangleBallCollision(Rectangle &r, Ball &b)
     Vec vert, horz, gravity;
     rectangleSurfaceNormals(r, vert, horz);
     /*MakeVector(0, 1, 0, vert);
-    MakeVector(1, 0, 0, horz);
-    */
+      MakeVector(1, 0, 0, horz);
+     */
     MakeVector(0, -1, 0, gravity);
 
     //rotated
@@ -323,11 +323,11 @@ int rectangleBallCollision(Rectangle &r, Ball &b)
         Vec dP;
         //project the ball's position onto the collided surface's normal
         double projectNorm = VecProject(between, rNorm);
-        
+
         //scale the rNorm to the distance the ball is inside the rect.
         VecScale(rNorm, 
-            std::abs(b.radius - std::abs(projectNorm - r.height)), 
-            dP);
+                std::abs(b.radius - std::abs(projectNorm - r.height)), 
+                dP);
 
         //if the distance is small enough, shift the ball's posion
         if (VecMagnitude(dP) <= b.radius) {
@@ -352,53 +352,53 @@ int rectangleBallCollision(Rectangle &r, Ball &b)
 
 void flipperBallCollision(Flipper &f, Ball &b)
 {
-	float angle = f.inverted ? -f.angle : f.angle;
-	//unit axis vectors
-	Vec vert, horz;
-	MakeVector(0, 1, 0, vert);
-	MakeVector(1, 0, 0, horz);
-	if (f.inverted) {
-		VecScale(horz, -1, horz);
-	}
+    float angle = f.inverted ? -f.angle : f.angle;
+    //unit axis vectors
+    Vec vert, horz;
+    MakeVector(0, 1, 0, vert);
+    MakeVector(1, 0, 0, horz);
+    if (f.inverted) {
+        VecScale(horz, -1, horz);
+    }
 
-	//rotated
-	VecRotate(vert, angle, vert);
-	VecRotate(horz, angle, horz);
+    //rotated
+    VecRotate(vert, angle, vert);
+    VecRotate(horz, angle, horz);
 
-	Vec between;
-	VecBtn(f.pos, b.pos, between);
-	double projectX = VecProject(between, horz);
-	double projectY = VecProject(between, vert);
+    Vec between;
+    VecBtn(f.pos, b.pos, between);
+    double projectX = VecProject(between, horz);
+    double projectY = VecProject(between, vert);
 
-	//check collision
-	if (projectX > 0 && projectX < f.width + b.radius
-			&& projectY > -(b.radius + f.height) && projectY < b.radius) {
+    //check collision
+    if (projectX > 0 && projectX < f.width + b.radius
+            && projectY > -(b.radius + f.height) && projectY < b.radius) {
 
-		//adjust position
-		Vec dP;
-		VecScale(vert, b.radius - projectY, dP);
-		VecAdd(b.pos, dP,b.pos);
+        //adjust position
+        Vec dP;
+        VecScale(vert, b.radius - projectY, dP);
+        VecAdd(b.pos, dP,b.pos);
 
-		Vec dV;
-		double speed;
+        Vec dV;
+        double speed;
 
-		//speed is based on the incoming velocity
-		//the horizontal distance from the pivot point of the flipper (torque)
-		//and the speed at which the flipper is rotating 
-		speed = 0.5 * VecMagnitude(b.vel) + 
+        //speed is based on the incoming velocity
+        //the horizontal distance from the pivot point of the flipper (torque)
+        //and the speed at which the flipper is rotating 
+        speed = 0.5 * VecMagnitude(b.vel) + 
             pow((projectX / f.width) + 0.5, 2) * (f.rvel / 10);
-		VecScale(vert, speed, dV);
-		VecAdd(b.vel, dV, b.vel);
+        VecScale(vert, speed, dV);
+        VecAdd(b.vel, dV, b.vel);
 
-		//reflection vector
-		VecRotate(dV, VecAngleBtn(between, vert), dV); 
+        //reflection vector
+        VecRotate(dV, VecAngleBtn(between, vert), dV); 
 
-		//add horizontal velocity if at the tip of flipper
-		if (projectX / f.width > 0.20) {
-			VecScale(horz, speed * 0.2 * projectX / f.width, dV);
-			VecAdd(b.vel, dV, b.vel);
-		}
-	}
+        //add horizontal velocity if at the tip of flipper
+        if (projectX / f.width > 0.20) {
+            VecScale(horz, speed * 0.2 * projectX / f.width, dV);
+            VecAdd(b.vel, dV, b.vel);
+        }
+    }
 }
 
 /* Scales down the ball's velocity if it is greater than maximum */

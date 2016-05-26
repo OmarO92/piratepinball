@@ -53,7 +53,7 @@ extern Sounds gameSounds;
 
 void showMainMenu() 
 {
-    
+
     Rectangle screen;
     screen.width = (double)yres / 2.0;
     screen.height = (double)xres / 2.0;
@@ -62,12 +62,12 @@ void showMainMenu()
     screen.angle = 90;
     glColor4d(1.0,1.0,1.0,1.0);
     drawRectangleTextureAlpha(screen, MainMenuTexture);
-   
+
 }
 void gameOver(GameBoard &gb, Ball &ball1, score &s)
 {
     if(ball1.pos[1] < 0.0 + ball1.radius) {
-								gameSounds.playSound((char *)"splash\0");
+        gameSounds.playSound((char *)"splash\0");
         ball1.pos[0] = gb.starting_point[0];
         ball1.pos[1] = gb.starting_point[1];
         s.balls_left--;
