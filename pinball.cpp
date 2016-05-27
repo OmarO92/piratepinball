@@ -41,7 +41,7 @@ extern "C" {
 #include "omarO.h"
 #include "hassenS.h"
 
-const int NUM_IMAGES = 47;
+const int NUM_IMAGES = 48;
 //const int SMOKE_SPRITES = 12;
 const double CHUTE_THICKNESS = 6.0;
 const double CHUTE_WIDTH = 40.0;
@@ -159,6 +159,7 @@ Ppmimage *ropeDeflectorImage[2];
 Ppmimage *smokeSprites[SMOKE_SPRITES];
 Ppmimage *flagSprites[FLAG_SPRITES];
 Ppmimage *monsterImages[6];
+Ppmimage *scoreBoardImage;
 
 char ImageFile[NUM_IMAGES][250] = {
     "flippers.png\0",
@@ -196,7 +197,9 @@ char ImageFile[NUM_IMAGES][250] = {
     "GameControls.jpg\0",
     "GameOver.jpg\0",
     "MainMenu.jpg\0",
-    "close-chest21.jpg\0", "close-chest212.jpg\0"
+    "close-chest21.jpg\0", "close-chest212.jpg\0",
+    "scoreboard.png\0"
+
 };
 GLuint OceanTexture;
 
@@ -220,7 +223,7 @@ GLuint flagSpriteTexture[FLAG_SPRITES];
 GLuint steeringWheelTexture;
 GLuint ropeDeflectorTexture[2];
 GLuint monsterTextures[6];
-
+GLuint scoreBoardTexture;
 
 //Setup timers
 const double physicsRate = 1.0 / 60.0;
@@ -1267,6 +1270,9 @@ void initTextures(void)
 
     sprintf(buffer, "./images/MainMenu.ppm");
     alphaTextureInit(buffer, MainMenuTexture, MainMenuImage);
+
+    sprintf(buffer, "./images/scoreboard.ppm");
+    alphaTextureInit(buffer, scoreBoardTexture, scoreBoardImage);
 }
 
 void drawSteeringWheel(SteeringWheel &wheel)
@@ -1544,6 +1550,11 @@ void render(void)
     if (pauseGame || !gameNotOver) {
         Rectangle screen;
         screen.width = yres / 2.0;
+        
+        if (!gameNotOver) {
+            screen.width = yres / 2.0 - 50.0;
+        }
+
         screen.height = xres / 2.0;
         screen.pos[0] = (double)xres / 2.0;
         screen.pos[1] = (double)yres / 2.0;
@@ -1551,7 +1562,7 @@ void render(void)
         glColor4d(1.0,1.0,1.0,1.0);
         drawRectangleTextureAlpha(screen, 
                 gameNotOver ? controlsTexture: gameOverTexture);
-
+        
 
         return;
 
@@ -1584,6 +1595,7 @@ void render(void)
     drawCannon(cannon);//draw canon 
     drawCannon(boardCannon);
 
+    drawScore();
     //show board edge for debug
     /*
        glPushMatrix();
@@ -1626,7 +1638,7 @@ void render(void)
 
     drawFlipper(flipper);
     drawFlipper(flipper2);
-    drawScore();
+    //drawScore();
 
 
 }

@@ -38,6 +38,7 @@ extern GLuint MainMenuTexture;
 extern GLuint flippersTexture;
 extern GLuint flippersTexture2;
 extern GLuint pinballTexture;
+extern GLuint scoreBoardTexture;
 extern Ball ball1;
 extern bool cannonFired;
 extern bool launch;
@@ -94,7 +95,7 @@ void risingScore(score *s)
 {
     //rising points increments until it reaches the same amount as score
     if (s->points > s->rising_points) {
-        s->rising_points += 30;
+        s->rising_points += 10;
     }
     else 
         //if rising matches score don't increment anymore
@@ -110,16 +111,25 @@ void initScore(score *s)
 
 void drawScore()
 {
+    Rectangle rect;
+    rect.width = 25.0;
+    rect.height = (double)xres / 2.0;
+    rect.angle = 90.0;
+    MakeVector((double)xres / 2.0, yres - 25.0, 0, rect.pos);
+    drawRectangleTextureAlpha(rect, scoreBoardTexture);
+    
     //position of the display 
     Rect re;
-    re.bot = yres - 20;
-    re.left = 10;
+    re.bot = yres - 35;
     re.center = 0;
     //Display Scoreboard in red
     risingScore(&Scorekeeper);
-    ggprint16(&re, 22, 0x00ff0000, "Balls Left: %i", Scorekeeper.balls_left); 
+    re.left = 450;
+    ggprint16(&re, 0, 0x00ff0000, "%i", Scorekeeper.balls_left);
     //displaying the points in increments of 10
-    ggprint16(&re, 22, 0x00ff0000, "Score: %i", Scorekeeper.rising_points);
+    re.left = 250;
+    re.bot = yres - 35;
+    ggprint16(&re, 22, 0x00ff0000, "%i", Scorekeeper.rising_points);
 }
 
 //Transparent pictures
