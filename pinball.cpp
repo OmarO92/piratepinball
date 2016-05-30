@@ -89,7 +89,6 @@ void drawCannonMovement(Cannon &, Smoke &);
 void rotateCannon(Cannon &c, double angle);
 void drawChest(TreasureChest &);
 void drawFlipper(const Flipper &);
-void flagAnimation(Flag &);
 void flagPhysics(Flag &, Ball &);
 void drawSteeringWheel(SteeringWheel &);
 void drawDeflector(Deflector &);
@@ -1355,54 +1354,6 @@ void flagPhysics(Flag &f, Ball &b)
     }
 }
 
-void flagAnimation(Flag &f)
-{		
-    //Flag properties
-    //int flagFrame
-    //timespec flagFrameTimer
-    //Rectangle r
-    if (f.flagFrame < FLAG_SPRITES * 2) {
-        //cout << "flag: " << f.flagFrame << endl;
-        glPushMatrix();
-        glColor3d(1.0, 1.0, 1.0);
-
-        f.r.angle = 90;
-        drawRectangleTextureAlpha(f.r, flagSpriteTexture[f.flagFrame % FLAG_SPRITES]);
-        /*
-           glTranslated(f.r.pos[0], f.r.pos[1], f.r.pos[2]);
-           glRotatef(f.r.angle + 90.0, 0, 0, 1);
-           glBindTexture(GL_TEXTURE_2D, flagSpriteTexture[f.flagFrame]);
-           glEnable(GL_ALPHA_TEST);
-           glAlphaFunc(GL_GREATER, 0.0f);
-           glColor4ub(255,255,255,255);
-
-           glBegin(GL_QUADS);
-           glVertex2d(-f.r.width, -f.r.height); glTexCoord2f(0.0f, 1.0f);
-           glVertex2d(-f.r.width, f.r.height); glTexCoord2f(0.0f, 0.0f); 
-           glVertex2d(f.r.width, f.r.height); glTexCoord2f(1.0f, 0.0f); 
-           glVertex2d(f.r.width, -f.r.height); glTexCoord2f(1.0f, 1.0f); 
-           glEnd();
-
-           glBindTexture(GL_TEXTURE_2D,0);*/
-        glPopMatrix();
-
-        if (f.state == 1) {
-            //if a 20th of a second has passed
-            if (timeDiff(&f.flagFrameTimer, &timeCurrent) > 1.0/20.0) {
-                //reset the timer
-                timeCopy(&f.flagFrameTimer, &timeCurrent);
-                //advance to the next frame
-                f.flagFrame++;
-            }   
-        }
-    } else {
-        f.state = 0;
-        f.flagFrame = 0;
-    }
-
-}
-
-
 //Display Image 
 void drawFlipper(Flipper &f)
 {
@@ -1588,7 +1539,7 @@ void render(void)
     glPopMatrix();
 
     OceanBackground();
-    flagAnimation(flag);
+    flagAnimation(flag, timeCurrent);
     drawChest(chest);//drawing chest
     drawSeaMonster(seaMonster);
     drawSteeringWheel(steeringWheel);

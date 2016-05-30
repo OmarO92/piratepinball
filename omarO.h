@@ -45,6 +45,7 @@ void initFlag(Flag &);
 //initSmoke sets properties for smoke sprites
 void initSmoke(Smoke &);
 void smokeAnimation(Smoke &, timespec );
+void flagAnimation(Flag &, timespec);
 //initChest initializes treasure chest object properties
 void initChest(TreasureChest &);
 //ballChestCollision plays sound when ball collides with chest

@@ -173,6 +173,32 @@ void initSmoke(Smoke &s)
 	smoke_sprite->angle = 90.0;
 
 }
+void flagAnimation(Flag &f, timespec timeCurrent)
+{ 
+	if (f.flagFrame < FLAG_SPRITES * 2) {
+		glPushMatrix();
+		glColor3d(1.0, 1.0, 1.0);
+		f.r.angle = 90;
+		drawRectangleTextureAlpha(f.r, 
+				flagSpriteTexture[f.flagFrame % FLAG_SPRITES]);
+
+		glPopMatrix();
+
+		if (f.state == 1) {
+			//if a 20th of a second has passed
+			if (timeDiff(&f.flagFrameTimer, &timeCurrent) > 1.0/20.0) {
+				//reset the timer
+				timeCopy(&f.flagFrameTimer, &timeCurrent);
+				//advance to the next frame
+				f.flagFrame++;
+			}   
+		}
+	} else {
+		f.state = 0;
+		f.flagFrame = 0;
+	}
+
+}
 //renders a sequence of smoke sprites with loop 
 void smokeAnimation(Smoke &s, timespec timeCurrent)
 {   
