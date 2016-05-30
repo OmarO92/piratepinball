@@ -142,7 +142,6 @@ int ballChestCollision(TreasureChest &chest, Ball &b)
 			chest.HP--;
 		}
 		if (chest.HP == 0) {
-			cout << "OPEN\n";
 			chest.state = 1;
 			addScore(&Scorekeeper, 1000);
 		}
@@ -202,7 +201,6 @@ void flagAnimation(Flag &f, timespec timeCurrent)
 //renders a sequence of smoke sprites with loop 
 void smokeAnimation(Smoke &s, timespec timeCurrent)
 {   
-	cout << s.frame << " \n";//prints frame # to console for debugging
 	if (s.frame < SMOKE_SPRITES) {
 		drawRectangleTextureAlpha(s.r, smokeSpriteTexture[s.frame]);
 		//if a 20th of a second has passed

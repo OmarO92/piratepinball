@@ -24,6 +24,8 @@
 
 const double monsterGutter = 90.0;
 const double  MAX_VELOCITY = 25.0;
+const double FLIPPER_SPEED = 14.8;
+const double FLIPPER_REST_ANGLE = -50;
 
 bool isLeft(Vec &, Vec &, Vec &);
 void addCurve(Curve &, GameBoard &);
@@ -38,6 +40,13 @@ int deflectorBallCollision(Deflector &, Ball &);
 int bumperBallCollision(Bumper &, Ball &);
 int steeringWheelBallCollision(SteeringWheel &, Ball &);
 void flipperBallCollision(Flipper &, Ball &);
+void flipperMovement(Flipper &e);
 void applyMaximumVelocity(Ball &);
+
+void fireCannon(Cannon &, Ball &);
+void cannonPhysics(Cannon &cannon, Ball &ball);
+
+void seaMonsterPhysics(SeaMonster &, Ball &);
+void killSeaMonster(SeaMonster &);
 #endif
 
