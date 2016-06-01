@@ -9,6 +9,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <fstream>
 #include "omarO.h"
 #include "gameObjects.h"
 #include "alexR.h"
@@ -142,6 +143,7 @@ int ballChestCollision(TreasureChest &chest, Ball &b)
 			chest.HP--;
 		}
 		if (chest.HP == 0) {
+			cout << "OPEN\n";
 			chest.state = 1;
 			addScore(&Scorekeeper, 1000);
 		}
@@ -201,6 +203,7 @@ void flagAnimation(Flag &f, timespec timeCurrent)
 //renders a sequence of smoke sprites with loop 
 void smokeAnimation(Smoke &s, timespec timeCurrent)
 {   
+	cout << s.frame << " \n";//prints frame # to console for debugging
 	if (s.frame < SMOKE_SPRITES) {
 		drawRectangleTextureAlpha(s.r, smokeSpriteTexture[s.frame]);
 		//if a 20th of a second has passed
@@ -244,4 +247,51 @@ void initChest(TreasureChest &chest)
 	rec->width = 40.0;
 	rec->height = 40.0;
 	rec->angle = 0.0;
+}
+//function loads structure array properties 
+//for sound from a txt file (testing)
+void loadSoundProperties(soundProperties &p, char *filename)
+{
+	ALuint sources[100];
+	//ALuint bufferArr[100];
+	int i = 0;
+	char *fName = NULL;
+	char *uName = NULL;
+	bool loop = true;
+	float gain = 0.0;
+	float pitch = 0.0;
+
+	ifstream load(filename);
+	if (load.is_open()) {
+
+		while (!load.eof()) {
+
+			load >> fName;
+			load >> uName;
+			load >> loop;
+			load >> gain;
+			load >> pitch;
+
+			if (load.good()) {
+
+				strcpy(p.wavName[i], fName);
+				//buffArr[i] = alutCreateBufferFromFile(p.wavName[i]);
+				strcpy(p.username[i], uName);
+				p.looper[i] = loop;
+
+				if (p.looper[i] == true) {
+					alSourcei(sources[i], AL_LOOPING, AL_TRUE);	
+				}
+
+				else {
+					alSourcei(sources[i], AL_LOOPING, AL_FALSE);
+				}
+
+				alSourcef(sources[i], AL_GAIN, p.gain[i]);
+				alSourcef(sources[i], AL_PITCH, p.pitch[i]);
+				i++;
+			}
+		}
+		load.close();
+	}
 }

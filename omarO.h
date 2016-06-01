@@ -17,6 +17,7 @@
 #include </usr/include/AL/alut.h>
 using namespace std;
 
+const int SIZE = 100;
 const int SMOKE_SPRITES = 12;
 const int FLAG_SPRITES = 6;
 const int BUFFERS = 9;
@@ -24,6 +25,15 @@ const int NUM_WAVS = 9;
 const int NUM_SOURCES = 9;
 extern GLuint smokeSpriteTexture[];
 extern GLuint flagSpriteTexture[];
+
+struct soundProperties {
+	char wavName[NUM_WAVS][SIZE];
+	char username [NUM_WAVS][SIZE];
+	bool looper[SIZE];
+	float gain[SIZE];
+	float pitch[SIZE];
+};
+
 class Sounds {
 	private:
 		ALuint buffers[BUFFERS];
@@ -53,5 +63,5 @@ int ballChestCollision(TreasureChest &, Ball &);
 //initCanon initializes canon object properties
 void initCannon(Cannon & );
 void initLauncher(Cannon &);
-//init_sound creates soudn source and buffer
+void loadSoundProperties(soundProperties &, char *);
 #endif
