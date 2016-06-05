@@ -25,6 +25,18 @@ using namespace std;
 extern score Scorekeeper;
 extern GameBoard board;
 extern int xres, yres;
+extern timespec timeCurrent;
+extern bool gameNotOver;
+extern bool pauseGame;
+extern Cannon cannon;
+extern Smoke smoke;
+extern Cannon boardCannon;
+extern Ball ball1;
+extern bool boom;
+extern bool launch;
+extern Sounds gameSounds;
+extern int cannonFired;
+extern string playerName; 
 /*****SOUNDS CLASS IMPLEMENTATION****
 	The Sound class loads all wav file data into buffers
 	Plays sound according to string input from pinball.cpp
@@ -297,7 +309,18 @@ void loadSoundProperties(soundProperties &p, char *filename)
 }
 Bird::Bird()
 {
-	
+	_frame = 0;
+	strcpy(birdImages[0], "bird1.jpg\0");
+	strcpy(birdImages[1], "bird2.jpg\0");
+	strcpy(birdImages[2], "bird3.jpg\0");
+	strcpy(birdImages[3], "bird4.jpg\0");
+	strcpy(birdImages[4], "bird5.jpg\0");
+	strcpy(birdImages[5], "bird6.jpg\0");
+	strcpy(birdImages[6], "bird7.jpg\0");
+	strcpy(birdImages[7], "bird8.jpg\0");
+	strcpy(birdImages[8], "bird9.jpg\0");
+	strcpy(birdImages[9], "bird10.jpg\0");
+
 }
 void Bird::convert_to_ppm()
 {
@@ -307,9 +330,24 @@ void Bird::convert_to_ppm()
 		char *period = strchr(filename, '.');
 		*period = '\0';
 		sprintf(syscall_buffer, "convert ./images/%s ./images/%s.ppm",
-			birdImages[i], filename);
+				birdImages[i], filename);
 		system(syscall_buffer);
 	}
+}
+void Bird::displayBird()
+{	
+	/*cout << _frame << " \n";//prints frame # to console for debugging
+		if (_frame < 10) {
+		drawRectangleTextureAlpha(s.r, smokeSpriteTexture[_frame]);
+	//if a 20th of a second has passed
+	if (timeDiff(&s.frame_timer, &timeCurrent) > 1.0/20.0) {
+	//reset the timer
+	timeCopy(&s.frame_timer, &timeCurrent);
+	//advance to the next frame
+	_frame++;
+	}
+
+	}*/
 }
 void writeScoreToFile()
 {
@@ -323,10 +361,34 @@ void writeScoreToFile()
 		out << "<body>" << endl;
 		out << "<h3 style=\"color:#FF0D00; position:center\">" 
 				<< "HIGH SCORE: </h3>" << endl;
-		out << "<ol>" << endl;
-		out << "<li> " << 
+		out << "<ul>" << endl;
+		out << "<li> " << playerName << " " 
+				<< Scorekeeper.points << endl;
+		out << "</li>" << endl;
+		out << "</ul>" << endl; 
 		out << "</body>" << endl;
 		out << "</html>" << endl; 
 	}	
 	out.close();
+}
+void launchCannonOnKeyPress()
+{
+	//fire main launcher
+	if (gameNotOver && !pauseGame && cannon.active) {
+		//start frame timer
+		timeCopy(&smoke.frame_timer, &timeCurrent);
+		cannon.firing = 1;
+		boom = true;
+		launch = true;
+		gameSounds.playSound((char *)"cannon\0");
+		if (cannonFired < 1) {
+			ball1.vel[1] = 20.0;
+			cannonFired++;
+		}
+	}
+	//fire secondary cannon
+	else if (boardCannon.loaded && !boardCannon.firing) {
+		gameSounds.playSound((char *)"cannon\0");
+		fireCannon(boardCannon, ball1);
+	}
 }

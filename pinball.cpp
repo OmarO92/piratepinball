@@ -105,6 +105,7 @@ bool launch = false;
 bool pauseGame = false;
 bool MainMenuOn;
 int cannonFired = 0;
+string playerName = "";
 
 char buffer[256];
 
@@ -226,6 +227,10 @@ double timeSpan=0.0;
 
 int main(void)
 {
+		cout << "ENTER YOUR NAME: \n";
+		cin >> playerName;
+		cout << "WELCOME! " << playerName << endl;
+		cout << "...Begin!\n";
 
     srand(time(NULL));
     Scorekeeper.points = 0;
@@ -340,6 +345,7 @@ int main(void)
         sprintf(syscall_buffer, "images/%s.ppm", filename);
         unlink(syscall_buffer);
     }
+		writeScoreToFile();
     return 0;
 }
 
@@ -824,7 +830,8 @@ void checkKeys(XEvent *e)
                 gameSounds.playSound((char *)"flippers\0");
                 break;
             case XK_b:
-                //fire main launcher
+								launchCannonOnKeyPress();
+               /* //fire main launcher
                 if (gameNotOver && !pauseGame && cannon.active) {
                     //start frame timer
                     timeCopy(&smoke.frame_timer, &timeCurrent);
@@ -841,7 +848,7 @@ void checkKeys(XEvent *e)
                 else if (boardCannon.loaded && !boardCannon.firing) {
                     gameSounds.playSound((char *)"cannon\0");
                     fireCannon(boardCannon, ball1);
-                }
+                }*/
                 break;
             case XK_h:
                 hide = true;

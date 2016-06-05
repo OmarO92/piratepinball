@@ -40,6 +40,7 @@ class Bird {
 	char syscall_buffer[256];
 	char filename[256];
 	char birdImages[10][100];
+	int _frame;
 	public:
 	Bird();
 	void displayBird();
@@ -77,4 +78,5 @@ void initCannon(Cannon & );
 void initLauncher(Cannon &);
 void loadSoundProperties(soundProperties &, char *);
 void writeScoreToFile();
+void launchCannonOnKeyPress();
 #endif
