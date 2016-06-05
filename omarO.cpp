@@ -9,6 +9,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <fstream>
 #include "omarO.h"
 #include "gameObjects.h"
 #include "alexR.h"
@@ -246,4 +247,66 @@ void initChest(TreasureChest &chest)
 	rec->width = 40.0;
 	rec->height = 40.0;
 	rec->angle = 0.0;
+}
+//function loads structure array properties for sound from a txt file (testing)
+void loadSoundProperties(soundProperties &p, char *filename)
+{
+	ALuint sources[100];
+	//ALuint bufferArr[100];
+	int i = 0;
+	char *fName = NULL;
+	char *uName = NULL;
+	bool loop = true;
+	float gain = 0.0;
+	float pitch = 0.0;
+
+	ifstream load(filename);
+	if (load.is_open()) {
+
+		while (!load.eof()) {
+
+			load >> fName;
+			load >> uName;
+			load >> loop;
+			load >> gain;
+			load >> pitch;
+
+			if (load.good()) {
+
+				strcpy(p.wavName[i], fName);
+		//buffArr[i] = alutCreateBufferFromFile(p.wavName[i]);
+				strcpy(p.username[i], uName);
+				p.looper[i] = loop;
+
+				if (p.looper[i] == true) {
+					alSourcei(sources[i], AL_LOOPING, AL_TRUE);	
+				}
+
+				else {
+					alSourcei(sources[i], AL_LOOPING, AL_FALSE);
+				}
+
+				alSourcef(sources[i], AL_GAIN, p.gain[i]);
+				alSourcef(sources[i], AL_PITCH, p.pitch[i]);
+				i++;
+			}
+		}
+		load.close();
+	}
+}
+Bird::Bird()
+{
+	
+}
+void Bird::convert_to_ppm()
+{
+	for (int i = 0; i < 10; i++) {
+
+		strcpy(filename, birdImages[i]);
+		char *period = strchr(filename, '.');
+		*period = '\0';
+		sprintf(syscall_buffer, "convert ./images/%s ./images/%s.ppm",
+			birdImages[i], filename);
+		system(syscall_buffer);
+	}
 }
