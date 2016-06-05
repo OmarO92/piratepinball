@@ -76,4 +76,5 @@ int ballChestCollision(TreasureChest &, Ball &);
 void initCannon(Cannon & );
 void initLauncher(Cannon &);
 void loadSoundProperties(soundProperties &, char *);
+void writeScoreToFile();
 #endif

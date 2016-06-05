@@ -311,3 +311,22 @@ void Bird::convert_to_ppm()
 		system(syscall_buffer);
 	}
 }
+void writeScoreToFile()
+{
+	ofstream out("highsore.html");
+	if (out.is_open()) {
+		out << "<!DOCTYPE html>" << endl;
+		out << "<html>" << endl;
+		out << "<head>" << endl;
+		out << "<title> PIRATE PINBALL </title>" << endl;
+		out << "</head>" << endl;
+		out << "<body>" << endl;
+		out << "<h3 style=\"color:#FF0D00; position:center\">" 
+				<< "HIGH SCORE: </h3>" << endl;
+		out << "<ol>" << endl;
+		out << "<li> " << 
+		out << "</body>" << endl;
+		out << "</html>" << endl; 
+	}	
+	out.close();
+}
