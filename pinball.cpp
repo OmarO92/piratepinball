@@ -47,11 +47,7 @@ const double CHUTE_THICKNESS = 6.0;
 const double CHUTE_WIDTH = 40.0;
 const double FLIPPER_LENGTH = 70.0;
 const double FLIPPER_HEIGHT = 15.0;
-const double FLIPPER_SPEED = 14.8;
-const double FLIPPER_REST_ANGLE = -50;
-
 const double CANNON_POS_Y = 100.0;
-
 
 typedef double Flt;
 //typedef Flt Vec[3];
@@ -96,11 +92,7 @@ void OceanBackground();
 void drawFlipper(Flipper &f);
 void drawBall();
 
-
-void fireCannon(Cannon &, Ball &);
-void cannonPhysics(Cannon &cannon, Ball &ball);
 void physics(void);
-void flipperMovement(Flipper &e);
 
 bool hide = false;
 
@@ -579,32 +571,7 @@ void initSeaMonster(SeaMonster &monster)
     monster.collision_circle.radius = 60.0;
 }
 
-void killSeaMonster(SeaMonster &monster)
-{
-    if (monster.state == 1) {
-        monster.state = 2;
-        timeCopy(&monster.active_time, &timeCurrent);
-    }
-}
 
-void seaMonsterPhysics(SeaMonster &monster, Ball &ball)
-{
-
-    if (monster.state == 1 &&
-            insideCircle(monster.collision_circle.radius,
-                monster.collision_circle.pos, ball)) {
-        monster.state = 2;
-        addScore(&Scorekeeper, 50);
-        timeCopy(&monster.active_time, &timeCurrent);
-
-    }
-    if (monster.HP == 0) {
-        monster.HP = 3;
-        monster.state = 3;
-        addScore(&Scorekeeper, 1000);
-        timeCopy(&monster.active_time, &timeCurrent);
-    }
-}
 
 void seaMonsterState(SeaMonster &monster)
 {
@@ -909,87 +876,6 @@ void checkKeys(XEvent *e)
             }
         }
     }
-}
-
-
-
-//moves the flipper based on its flipstate
-void flipperMovement(Flipper &f)
-{
-    //add rotational velocity to angle
-    f.angle += f.rvel;
-
-    switch (f.flipstate)
-    {
-        //idle; rotational velocity is 0 and the angle is the rest angle
-        case 0:
-            f.rvel = 0;
-            f.angle = FLIPPER_REST_ANGLE;
-            break;
-        case 1:
-            //going up; set rotational velocity to 
-            //flipper speed until the flipper passes the max angle
-            if (f.angle < 40) {
-                f.rvel = FLIPPER_SPEED;
-            }
-            else {
-                // if the flipper is passed the max angle, set flipstate to 
-                //'going down'
-                f.rvel = 0;
-                //f.flipstate = 2;
-            }
-            break;
-        case 2: 
-            //going down; make rotational velocity negative 
-            //until flipper is at rest angle
-            if (f.angle > FLIPPER_REST_ANGLE) {
-                f.rvel = -10;
-            }
-            else {
-                f.rvel = 0;
-                f.flipstate = 0;
-            }
-            break;
-    }
-}
-
-void cannonPhysics(Cannon &can, Ball &ball)
-{
-    if (insideCircle(can.collision_circle.radius, can.collision_circle.pos, ball)) { 
-        if (!can.loaded) {
-            can.loaded = 1;
-            ball.vel[0] = 0;
-            ball.vel[1] = 0;
-            ball.isVisible = 0;
-            ball.hasGravity = 0;
-            timeCopy(&can.timer, &timeCurrent);
-            VecScale(can.direction, can.r.height + ball.radius, ball.pos);
-            VecAdd(ball.pos, can.r.pos, ball.pos);
-        }
-
-
-    }
-
-    if (can.loaded && !can.firing
-            && timeDiff(&can.timer, &timeCurrent) > 10.0) {
-
-        can.loaded = 0;
-        can.firing = 1;
-
-        ball1.hasGravity = 1;
-        ball.isVisible = 1;
-        VecScale(can.direction, 15.0, ball.vel);
-
-    }
-}
-
-void fireCannon(Cannon &can, Ball &ball) {
-    can.loaded = 0;
-    can.firing = 1;
-
-    ball1.hasGravity = 1;
-    ball.isVisible = 1;
-    VecScale(can.direction, 15.0, ball.vel);
 }
 
 void physics(void)

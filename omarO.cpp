@@ -248,7 +248,8 @@ void initChest(TreasureChest &chest)
 	rec->height = 40.0;
 	rec->angle = 0.0;
 }
-//function loads structure array properties for sound from a txt file (testing)
+//function loads structure array properties 
+//for sound from a txt file (testing)
 void loadSoundProperties(soundProperties &p, char *filename)
 {
 	ALuint sources[100];
@@ -274,7 +275,7 @@ void loadSoundProperties(soundProperties &p, char *filename)
 			if (load.good()) {
 
 				strcpy(p.wavName[i], fName);
-		//buffArr[i] = alutCreateBufferFromFile(p.wavName[i]);
+				//buffArr[i] = alutCreateBufferFromFile(p.wavName[i]);
 				strcpy(p.username[i], uName);
 				p.looper[i] = loop;
 
