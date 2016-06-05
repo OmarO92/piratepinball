@@ -95,6 +95,7 @@ void drawBall();
 void physics(void);
 
 bool hide = false;
+bool fly = false;
 
 int done=0;
 int xres=780, yres=900;
@@ -130,6 +131,7 @@ Smoke smoke;
 Flag flag;
 SeaMonster seaMonster;
 Sounds gameSounds;
+Bird birds;
 
 Ppmimage *OceanImage;
 
@@ -251,6 +253,7 @@ int main(void)
 
         system(syscall_buffer);
     }
+		birds.convert_to_ppm();
     initXWindows();
     initOpengl();
 
@@ -265,6 +268,7 @@ int main(void)
     initFlag(flag);
     initSteeringWheel(steeringWheel);
     initSeaMonster(seaMonster);
+		
 
     gameSounds.initOpenAL();
     gameSounds.listener();
@@ -434,6 +438,7 @@ void initOpengl(void)
     initialize_fonts();
 
     initTextures();
+		birds.generateTexturesandPpms();
 }
 
 
@@ -850,6 +855,9 @@ void checkKeys(XEvent *e)
                     fireCannon(boardCannon, ball1);
                 }*/
                 break;
+						case XK_g:
+								fly = true;
+								break;
             case XK_h:
                 hide = true;
                 pauseGame ^= 1;
@@ -1440,6 +1448,9 @@ void render(void)
     drawCannon(boardCannon);
 
     drawScore();
+		if (fly) {
+		birds.displayBird(timeCurrent);
+		}
     //show board edge for debug
     /*
        glPushMatrix();

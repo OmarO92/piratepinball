@@ -38,13 +38,18 @@ class Bird {
 	Ppmimage *birdSprites[10];
 	GLuint birdSpriteTexture[10];
 	char syscall_buffer[256];
+	char _buffer[256];
 	char filename[256];
 	char birdImages[10][100];
 	int _frame;
+	timespec _frameTimer;
+	Rectangle _border;
 	public:
 	Bird();
-	void displayBird();
+	~Bird();
+	void displayBird(timespec);
 	void convert_to_ppm();
+	void generateTexturesandPpms();
 };
 
 class Sounds {

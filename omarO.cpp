@@ -22,10 +22,10 @@ extern "C" {
 #include "fonts.h"
 }
 using namespace std;
+extern timespec timeCurrent;
 extern score Scorekeeper;
 extern GameBoard board;
 extern int xres, yres;
-extern timespec timeCurrent;
 extern bool gameNotOver;
 extern bool pauseGame;
 extern Cannon cannon;
@@ -36,7 +36,8 @@ extern bool boom;
 extern bool launch;
 extern Sounds gameSounds;
 extern int cannonFired;
-extern string playerName; 
+extern string playerName;
+extern Bird birds; 
 /*****SOUNDS CLASS IMPLEMENTATION****
 	The Sound class loads all wav file data into buffers
 	Plays sound according to string input from pinball.cpp
@@ -66,6 +67,8 @@ Sounds::Sounds()
 	strcpy(soundNames[8], "wheel\0");
 
 }
+
+//initialize openAL
 int Sounds::initOpenAL()
 {
 	alutInit(0, NULL);
@@ -76,6 +79,8 @@ int Sounds::initOpenAL()
 	else return 1;
 
 }
+
+//create buffers for sound Class
 int Sounds::createBuffers()
 {
 	alGenBuffers(BUFFERS, buffers);
@@ -85,6 +90,8 @@ int Sounds::createBuffers()
 	}
 	else return 1;
 }
+
+//load all sounds into buffer
 void Sounds::loadSounds()
 {
 	for (int i = 0; i < NUM_WAVS; i++) {
@@ -92,6 +99,7 @@ void Sounds::loadSounds()
 	}
 }
 
+//play sound based on programmer input of string
 void Sounds::playSound(char *name)
 {
 	for (int i = 0; i < NUM_WAVS; i++) {
@@ -101,6 +109,7 @@ void Sounds::playSound(char *name)
 	}
 }
 
+//generate all sources of Sound class
 int Sounds::generateSource()
 {
 	for (int i = 0; i < NUM_SOURCES; i++) {
@@ -123,6 +132,8 @@ int Sounds::generateSource()
 	}
 	return 1; 
 }
+
+//set up listeners for Sound class
 void Sounds::listener()
 {
 	//Setup the listener.
@@ -131,6 +142,8 @@ void Sounds::listener()
 	alListenerfv(AL_ORIENTATION, vec);
 	alListenerf(AL_GAIN, 1.0f);
 }
+
+//clean up sound data 
 void Sounds::cleanUpSound()
 {
 	for (int i = 0; i < NUM_SOURCES; i++) {
@@ -148,6 +161,8 @@ void Sounds::cleanUpSound()
 	//Close device.
 	alcCloseDevice(Device);
 }
+
+//checks for collision with treasure chest
 int ballChestCollision(TreasureChest &chest, Ball &b)
 {
 	if (VecMagnitude(b.vel) > 1) {
@@ -164,6 +179,7 @@ int ballChestCollision(TreasureChest &chest, Ball &b)
 	else
 		return 0;
 }
+
 //renders a sequence of smoke sprites with loop 
 void initFlag(Flag &f)
 {
@@ -174,6 +190,7 @@ void initFlag(Flag &f)
 	flagSprite->height = 70.0;
 	flagSprite->angle = 0.0;
 }
+
 //initSmoke sets properties for smoke sprites
 //all sprites at same position to loop through each frame
 void initSmoke(Smoke &s)
@@ -186,6 +203,8 @@ void initSmoke(Smoke &s)
 	smoke_sprite->angle = 90.0;
 
 }
+
+//animates flag sprites in game
 void flagAnimation(Flag &f, timespec timeCurrent)
 { 
 	if (f.flagFrame < FLAG_SPRITES * 2) {
@@ -212,6 +231,7 @@ void flagAnimation(Flag &f, timespec timeCurrent)
 	}
 
 }
+
 //renders a sequence of smoke sprites with loop 
 void smokeAnimation(Smoke &s, timespec timeCurrent)
 {   
@@ -230,6 +250,7 @@ void smokeAnimation(Smoke &s, timespec timeCurrent)
 	}
 }
 
+//initialize cannon properties
 void initLauncher(Cannon &c)
 {
 	c.active = 1;
@@ -251,6 +272,7 @@ void initLauncher(Cannon &c)
 	smoke_sprite->angle = 90.0;
 }
 
+//initialize chest properties
 void initChest(TreasureChest &chest)
 {
 	Rectangle *rec = &chest.r;
@@ -307,9 +329,11 @@ void loadSoundProperties(soundProperties &p, char *filename)
 		load.close();
 	}
 }
+
+//default constructor initializes bird class properties
 Bird::Bird()
 {
-	_frame = 0;
+		_frame = 0;
 	strcpy(birdImages[0], "bird1.jpg\0");
 	strcpy(birdImages[1], "bird2.jpg\0");
 	strcpy(birdImages[2], "bird3.jpg\0");
@@ -320,8 +344,21 @@ Bird::Bird()
 	strcpy(birdImages[7], "bird8.jpg\0");
 	strcpy(birdImages[8], "bird9.jpg\0");
 	strcpy(birdImages[9], "bird10.jpg\0");
-
 }
+
+//Bird class desctructor
+Bird::~Bird()
+{
+	for (int i = 0; i < 10; i++) {
+		strcpy(filename, birdImages[i]);
+		char *period = strchr(filename, '.');
+		*period = '\0';   
+		sprintf(syscall_buffer, "images/%s.ppm", filename);
+		unlink(syscall_buffer);
+	}
+}
+
+//converts all jpgs of birds to ppms 
 void Bird::convert_to_ppm()
 {
 	for (int i = 0; i < 10; i++) {
@@ -334,21 +371,69 @@ void Bird::convert_to_ppm()
 		system(syscall_buffer);
 	}
 }
-void Bird::displayBird()
-{	
-	/*cout << _frame << " \n";//prints frame # to console for debugging
-		if (_frame < 10) {
-		drawRectangleTextureAlpha(s.r, smokeSpriteTexture[_frame]);
-	//if a 20th of a second has passed
-	if (timeDiff(&s.frame_timer, &timeCurrent) > 1.0/20.0) {
-	//reset the timer
-	timeCopy(&s.frame_timer, &timeCurrent);
-	//advance to the next frame
-	_frame++;
-	}
 
-	}*/
+//generate textures and ppm images for bird animation
+void Bird::generateTexturesandPpms()
+{
+	strcpy(_buffer, "./images/bird1.ppm");
+	alphaTextureInit(_buffer, birdSpriteTexture[0], birdSprites[0]);
+
+	strcpy(_buffer, "./images/bird2.ppm");
+	alphaTextureInit(_buffer, birdSpriteTexture[1], birdSprites[1]);	
+
+	strcpy(_buffer, "./images/bird3.ppm");
+	alphaTextureInit(_buffer, birdSpriteTexture[2], birdSprites[2]);
+
+	strcpy(_buffer, "./images/bird4.ppm");
+	alphaTextureInit(_buffer, birdSpriteTexture[3], birdSprites[3]);
+
+	strcpy(_buffer, "./images/bird5.ppm");
+	alphaTextureInit(_buffer, birdSpriteTexture[4], birdSprites[4]);
+
+	strcpy(_buffer, "./images/bird6.ppm");
+	alphaTextureInit(_buffer, birdSpriteTexture[5], birdSprites[5]);
+
+	strcpy(_buffer, "./images/bird7.ppm");
+	alphaTextureInit(_buffer, birdSpriteTexture[6], birdSprites[6]);
+
+	strcpy(_buffer, "./images/bird8.ppm");
+	alphaTextureInit(_buffer, birdSpriteTexture[7], birdSprites[7]);
+
+	strcpy(_buffer, "./images/bird9.ppm");
+	alphaTextureInit(_buffer, birdSpriteTexture[8], birdSprites[8]);
+
+	strcpy(_buffer, "./images/bird10.ppm");
+	alphaTextureInit(_buffer, birdSpriteTexture[9], birdSprites[9]);
 }
+
+//this function animates bird on screen with KeyPress G
+void Bird::displayBird(timespec timeCurrent)
+{
+		if (_frame < 10) {
+			cout << _frame << " \n";//prints frame # to console for debugging
+			//glPushMatrix();
+			glColor3d(1.0, 1.0, 1.0);
+			_border.pos[0] = 440.0;//xpos
+			_border.pos[1] = 220.0;//ypos
+			_border.width = 60.0;
+			_border.height = 60.0;
+			_border.angle = 50.0;
+			drawRectangleTextureAlpha(_border, 
+			birdSpriteTexture[_frame]);
+			//glPopMatrix();
+		if (timeDiff(&_frameTimer, &timeCurrent) > 1.0/20.0) {
+				timeCopy(&_frameTimer, &timeCurrent);
+				_frame++;
+		}
+	}
+	else {
+		_frame = 0;
+		_border.pos[0] += 50.0;
+		_border.pos[1] += 50.0;
+	}
+}
+
+//at end of game, scores are written to HTML web page.
 void writeScoreToFile()
 {
 	ofstream out("highsore.html");
@@ -360,10 +445,10 @@ void writeScoreToFile()
 		out << "</head>" << endl;
 		out << "<body>" << endl;
 		out << "<h3 style=\"color:#FF0D00; position:center\">" 
-				<< "HIGH SCORE: </h3>" << endl;
+			<< "HIGH SCORE: </h3>" << endl;
 		out << "<ul>" << endl;
 		out << "<li> " << playerName << " " 
-				<< Scorekeeper.points << endl;
+			<< Scorekeeper.points << endl;
 		out << "</li>" << endl;
 		out << "</ul>" << endl; 
 		out << "</body>" << endl;
@@ -371,6 +456,9 @@ void writeScoreToFile()
 	}	
 	out.close();
 }
+
+//function meets keypress class requirement.
+//launches cannon
 void launchCannonOnKeyPress()
 {
 	//fire main launcher
