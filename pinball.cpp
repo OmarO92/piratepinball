@@ -438,7 +438,7 @@ void initOpengl(void)
     initialize_fonts();
 
     initTextures();
-		birds.generateTexturesandPpms();
+	birds.generateTexturesandPpms();
 }
 
 
@@ -1440,6 +1440,9 @@ void render(void)
     glPopMatrix();
 
     OceanBackground();
+    if (fly) {
+	birds.displayBird(timeCurrent);
+	}
     flagAnimation(flag, timeCurrent);
     drawChest(chest);//drawing chest
     drawSeaMonster(seaMonster);
@@ -1448,9 +1451,7 @@ void render(void)
     drawCannon(boardCannon);
 
     drawScore();
-		if (fly) {
-		birds.displayBird(timeCurrent);
-		}
+		
     //show board edge for debug
     /*
        glPushMatrix();

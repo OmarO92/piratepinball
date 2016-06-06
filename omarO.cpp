@@ -414,7 +414,7 @@ void Bird::displayBird(timespec timeCurrent)
 			//glPushMatrix();
 			glColor3d(1.0, 1.0, 1.0);
 			_border.pos[0] = 440.0;//xpos
-			_border.pos[1] = 220.0;//ypos
+			_border.pos[1] = 520.0;//ypos
 			_border.width = 60.0;
 			_border.height = 60.0;
 			_border.angle = 50.0;
